@@ -1,8 +1,8 @@
 # For full import of table to HDFS
-/usr/bin/sqoop import --connect jdbc:mysql://192.168.1.75:3306/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee --append  --bindir .
+/usr/bin/sqoop import --connect jdbc:mysql://<ip-address or servername>/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee --append  --bindir .
 
 #for incremental import from source to HDFS
-/usr/bin/sqoop import --connect jdbc:mysql://192.168.1.75:3306/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee_incremental --incremental append --check-column modified_date --last-value {last_import_date} --bindir .
+/usr/bin/sqoop import --connect jdbc:mysql://<ip-address or server name>/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee_incremental --incremental append --check-column modified_date --last-value {last_import_date} --bindir .
 
 # Create a necessary table in HIVE to hold the base line data
 
@@ -13,7 +13,7 @@ hive> create external table employee_temp (empid int, empname string, role strin
 hive> insert overwrite table employee_base select * from employee_temp;
 
 #for incremental import from source based on query
-/usr/bin/sqoop import --connect jdbc:mysql://192.168.1.75:3306/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee_incremental -m 1 --query 'select * from employee_table where modified_date > {last_import_date} and $CONDITIONS' 
+/usr/bin/sqoop import --connect jdbc:mysql://<ip-address or servername>/test --username root -P --table employee -m 1 --driver com.mysql.jdbc.Driver --class-name employee --target-dir /usr/root/employee_incremental -m 1 --query 'select * from employee_table where modified_date > {last_import_date} and $CONDITIONS' 
 
 # create an external table to store incremental data
 #hive> create external table employee_incremental (empid int, empname string, role string, national_award string, created_data date, modified_date date) row format delimited fields terminated by ',' stored as textfile location '/usr/root/employee_incremental';
